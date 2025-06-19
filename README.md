@@ -1,4 +1,5 @@
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/wendelMarins/appmonitor-pipeline/ci.yml%3Fbranch%3Dmain))
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/wendel315/appmonitor-pipeline/ci.yml?branch=main)
+
 
 # AppMonitor Pipeline
 
