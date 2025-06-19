@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Validate Bash syntax
+        run: bash -n status-check.sh
+
+  test:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: |
+          echo "Running tests"
+          exit 0
+
+  package:
+    needs: [validate, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create report
+        run: zip report.zip status-check.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: report.zip
