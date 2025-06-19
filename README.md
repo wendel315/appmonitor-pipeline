@@ -1,3 +1,5 @@
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/wendelMarins/appmonitor-pipeline/ci.yml%3Fbranch%3Dmain))
+
 # AppMonitor Pipeline
 
 Este repositório contém os workflows de CI/CD para o projeto AppMonitor.

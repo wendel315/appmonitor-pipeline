@@ -5,33 +5,71 @@ on:
     branches: [ main ]
   pull_request:
 
+env:
+  ACTIONS_STEP_DEBUG: true
+
 jobs:
   validate:
+    name: 📝 Validate Script
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Validate Bash syntax
         run: bash -n status-check.sh
 
+      - name: Warn on syntax error
+        if: ${{ failure() }}
+        run: echo "::warning::Foi detectado um erro de sintaxe em status-check.sh"
+
   test:
+    name: ✅ Run Tests
     needs: validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Run tests
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Simulate tests
         run: |
           echo "Running tests"
           exit 0
 
+      - name: Error on test failure
+        if: ${{ failure() }}
+        run: echo "::error::Algum teste falhou. Verifique logs."
+
   package:
-    needs: [validate, test]
+    name: 📦 Package Artifact
+    needs: [ validate, test ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Create report
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create report.zip
         run: zip report.zip status-check.sh
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: report
           path: report.zip
+
+  summary:
+    name: 📊 Job Summary
+    needs: [ validate, test, package ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate pipeline summary
+        run: |
+          {
+            echo "## Pipeline Summary"
+            echo "- Runner OS: $RUNNER_OS"
+            echo "- Ref: $GITHUB_REF_NAME"
+            echo "- Validate: ${{ needs.validate.result }}"
+            echo "- Test: ${{ needs.test.result }}"
+            echo "- Package: ${{ needs.package.result }}"
+            echo "- Artifact: $(if [ -f report.zip ]; then echo '✓'; else echo '✗'; fi)"
+          } >> $GITHUB_STEP_SUMMARY
