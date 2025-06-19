@@ -1,0 +1,31 @@
+name: Run Monitor
+
+on: workflow_dispatch
+
+vars:
+  TIMEOUT: 30
+
+jobs:
+  job-env:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: ${{ vars.APP_ENV }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+    steps:
+      - run: echo "Environment is $APP_ENV, support at $SUPPORT_EMAIL"
+
+  job-vars:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use workflow var
+        run: echo "Timeout is ${{ vars.TIMEOUT }} seconds"
+
+  job-secret:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use API key
+        run: |
+          if [ -z "${{ secrets.API_KEY }}" ]; then
+            echo "Missing API_KEY" && exit 1
+          fi
+          echo "API_KEY is set"
