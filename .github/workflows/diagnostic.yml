@@ -1,0 +1,51 @@
+name: Diagnostic
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-vars:
+    name: 🔍 Diagnostic Checks
+    runs-on: ubuntu-latest
+
+    env:
+      APP_ENV: ${{ vars.APP_ENV }}
+      API_KEY: ${{ secrets.API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Verify mandatory variables
+        run: |
+          MISSING=false
+
+          if [ -z "$APP_ENV" ]; then
+            echo "::error::Variable APP_ENV não está definida."
+            MISSING=true
+          fi
+
+          if [ -z "$API_KEY" ]; then
+            echo "::error::Variable API_KEY não está definida."
+            MISSING=true
+          fi
+
+          if [ "$MISSING" = true ]; then
+            echo "Por favor, defina as variáveis obrigatórias em Settings → Variables/Secrets."
+            exit 1
+          fi
+
+      - name: Diagnostic logs
+        run: |
+          echo "::debug::APP_ENV = $APP_ENV"
+          echo "::debug::API_KEY = $API_KEY"
+
+      - name: Create diagnostic summary
+        run: |
+          {
+            echo "## Diagnostic Report"
+            echo "- APP_ENV: $APP_ENV"
+            echo "- API_KEY: ✓ set"
+            echo ""
+            echo "Se alguma variável estiver faltando, configure em Settings → Variables/Secrets."
+          } >> $GITHUB_STEP_SUMMARY
