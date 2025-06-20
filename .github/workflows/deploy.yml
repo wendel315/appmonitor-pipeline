@@ -1,13 +1,11 @@
-name: Deploy to Production
-
-on:
-  push:
-    branches: [ main ]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
+
+    env:
+      PROD_DOMAIN: ${{ vars.PROD_DOMAIN }}
+
     steps:
       - name: Deploy
-        run: echo "Deploying to ${{ environment.PROD_DOMAIN }}"
+        run: echo "Deploying to $PROD_DOMAIN"
